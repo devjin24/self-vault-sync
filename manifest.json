@@ -1,11 +1,12 @@
 {
-	"id": "sample-plugin",
-	"name": "Sample Plugin",
+	"id": "self-vault-sync",
+	"name": "Self Vault Sync",
 	"version": "1.0.0",
 	"minAppVersion": "0.15.0",
-	"description": "Demonstrates some of the capabilities of the Obsidian API.",
-	"author": "Obsidian",
-	"authorUrl": "https://obsidian.md",
-	"fundingUrl": "https://obsidian.md/pricing",
+	"description": "Self Valut Sync",
+	"author": "devjin24",
+	"authorUrl": "https://github.com/devjin24/self-vault-sync",
+	"fundingUrl": "",
+	"license": "CC-BY-NC-4.0",
 	"isDesktopOnly": false
 }
