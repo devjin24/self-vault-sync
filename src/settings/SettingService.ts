@@ -1,26 +1,20 @@
-import { OnedriveSetting } from "src/onedrive/Onedrive";
-import { SelfVaultSyncSettings } from "./SelfValutSyncSettings";
+import { SettingReposigory } from "./data/SettingRepository"
+import { SelfValutSyncSettings } from "./SelfValutSyncSettings"
 
-export class SettingManager {
-	private settings: SelfVaultSyncSettings
-	private loadData: () => Promise<any>;
-	private saveData: (data:any) => Promise<any>;
+export class SettingService {
+	private repo: SettingReposigory
+	private settings: SelfValutSyncSettings
 
-	constructor(loadData: () => Promise<any>, saveData: (data:any) => Promise<any>) {
-		this.loadData = loadData.bind(this);
-		this.saveData = saveData
-		this.loadSettings()
+	constructor(repo: SettingReposigory) {
+		this.repo = repo
 	}
 
 	async loadSettings() {
-		this.settings = Object.assign(
-			{},
-			structuredClone(new SelfVaultSyncSettings(new OnedriveSetting())),
-			await this.loadData()
-		);
+		this.settings = await this.repo.loadSettings()
+		console.log(this.settings)
 	}
 
 	async saveSettings() {
-		await this.saveData(this.settings);
+		await this.repo.saveSettings(this.settings)
 	}
 }

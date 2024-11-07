@@ -1,13 +1,13 @@
+import { OneDriveSetting } from "src/storage/onedrive/Onedrive"
 
-export class SelfVaultSyncSettings {
-	private storage: StorageSettings;
-	private concurrency: number = 5;
-	
+export class SelfValutSyncSettings {
+	storage: StorageSettings
+
 	constructor(storage: StorageSettings) {
 		this.storage = storage
 	}
+
 }
 
-export interface StorageSettings {
-	kind: string 
-}
+export interface StorageSettings {}
+

@@ -1,27 +1,36 @@
 import {
-	Plugin
+	App,
+	Plugin,
+	PluginManifest
 } from "obsidian";
-import { SettingManager } from "./settings/SettingService";
+import { SettingReposigory } from "./settings/data/SettingRepository";
+import { SettingService } from "./settings/SettingService";
 import { SelfVaultSyncSettingTab } from "./settings/SelfValutSyncSettingTab";
 
 export default class SelfVaultSync extends Plugin {
-	settingService: SettingManager;
+	settingService: SettingService;
 
-	init() {
+	constructor(app: App, manifest: PluginManifest) {
+        super(app, manifest);
+		
+	}
+
+	async init() {
 		console.log("init services");
-		this.setting
-		this.settingService = new SettingManager(
+		const settingRepo = new SettingReposigory(
 			this.loadData.bind(this),
 			this.saveData.bind(this)
 		);
-		this.
-
+		this.settingService = new SettingService(settingRepo)
+		await this.settingService.loadSettings();
+		
 	}
+	
 
 	async onload() {
 		console.info(`loading plugin ${this.manifest.id}`);
-		this.init();
-
+		await this.init();
+		
 		// // This creates an icon in the left ribbon.
 		// const ribbonIconEl = this.addRibbonIcon('dice', 'Sample Plugin', (evt: MouseEvent) => {
 		// 	// Called when the user clicks the icon.
@@ -70,6 +79,17 @@ export default class SelfVaultSync extends Plugin {
 		// 		}
 		// 	}
 		// });
+		const statusBarItemEl = this.addStatusBarItem();
+		statusBarItemEl.setText('Status Bar Text');
+
+		this.addCommand({
+			id: "start-sync",
+			name: "Start Sync",
+			// icon: iconNameSyncWait,
+			callback: async () => {
+				// this.syncRun("manual");
+			},
+		});
 
 		// // This adds a settings tab so the user can configure various aspects of the plugin
 		this.addSettingTab(new SelfVaultSyncSettingTab(this.app, this));
@@ -84,8 +104,8 @@ export default class SelfVaultSync extends Plugin {
 		// this.registerInterval(window.setInterval(() => console.log('setInterval'), 5 * 60 * 1000));
 	}
 
-	async onunload() {
-		await this.settingService.saveSettings();
+	onunload() {
+		// await this.settingService.saveSettings();
 	}
 }
 
