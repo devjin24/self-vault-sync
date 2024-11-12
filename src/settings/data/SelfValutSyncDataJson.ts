@@ -1,4 +1,4 @@
-import { OneDriveSetting } from "src/storage/onedrive/Onedrive";
+import { OneDriveSetting } from "src/storage/onedrvie/OneDriveSetting";
 
 export class SelfVaultSyncDataJson {
 	type: string;

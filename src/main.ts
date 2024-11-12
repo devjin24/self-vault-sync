@@ -1,36 +1,37 @@
-import {
-	App,
-	Plugin,
-	PluginManifest
-} from "obsidian";
-import { SettingReposigory } from "./settings/data/SettingRepository";
-import { SettingService } from "./settings/SettingService";
+import { App, Plugin, PluginManifest } from "obsidian";
 import { SelfVaultSyncSettingTab } from "./settings/SelfValutSyncSettingTab";
+import { StorageOptionHandler } from "./settings/StorageOptionHandler";
+import { SettingRepository, SettingRepositoryImpl } from "./settings/data/SettingRepository";
+import { PluginContext } from "./PluginContext";
 
 export default class SelfVaultSync extends Plugin {
-	settingService: SettingService;
+	settingRepo: SettingRepository;
 
 	constructor(app: App, manifest: PluginManifest) {
-        super(app, manifest);
+		super(app, manifest);
 		
 	}
 
-	async init() {
-		console.log("init services");
-		const settingRepo = new SettingReposigory(
+	async onload() {
+		this.settingRepo = new SettingRepositoryImpl(
 			this.loadData.bind(this),
 			this.saveData.bind(this)
 		);
-		this.settingService = new SettingService(settingRepo)
-		await this.settingService.loadSettings();
-		
-	}
-	
+		const pluginContext = new PluginContext(this.settingRepo)
+		pluginContext.onload()
 
-	async onload() {
 		console.info(`loading plugin ${this.manifest.id}`);
-		await this.init();
-		
+		// This adds a settings tab so the user can configure various aspects of the plugin
+		this.addSettingTab(
+			new SelfVaultSyncSettingTab(
+				this.app,
+				this,
+				new StorageOptionHandler(pluginContext.storageOptions())
+			)
+		);
+
+		// await this.init();
+
 		// // This creates an icon in the left ribbon.
 		// const ribbonIconEl = this.addRibbonIcon('dice', 'Sample Plugin', (evt: MouseEvent) => {
 		// 	// Called when the user clicks the icon.
@@ -80,7 +81,7 @@ export default class SelfVaultSync extends Plugin {
 		// 	}
 		// });
 		const statusBarItemEl = this.addStatusBarItem();
-		statusBarItemEl.setText('Status Bar Text');
+		statusBarItemEl.setText("Status Bar Text");
 
 		this.addCommand({
 			id: "start-sync",
@@ -90,9 +91,6 @@ export default class SelfVaultSync extends Plugin {
 				// this.syncRun("manual");
 			},
 		});
-
-		// // This adds a settings tab so the user can configure various aspects of the plugin
-		this.addSettingTab(new SelfVaultSyncSettingTab(this.app, this));
 
 		// // If the plugin hooks up any global DOM events (on parts of the app that doesn't belong to this plugin)
 		// // Using this function will automatically remove the event listener when this plugin is disabled.

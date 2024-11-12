@@ -1,8 +1,11 @@
-import { OneDriveSetting } from "src/storage/onedrive/Onedrive";
-import { SelfValutSyncSettings } from "../SelfValutSyncSettings";
+
+import { OneDriveSetting } from "src/storage/onedrvie/OneDriveSetting";
 import { SelfVaultSyncDataJson } from "./SelfValutSyncDataJson";
 
-export class SettingReposigory {
+export interface SettingRepository {
+	loadSettings():Promise<SelfValutSyncSettings>
+}
+export class SettingRepositoryImpl implements SettingRepository {
 	private dataJson: SelfVaultSyncDataJson
 	private loadData: () => Promise<any>;
 	private saveData: (data:any) => Promise<any>;
