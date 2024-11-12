@@ -1,8 +1,8 @@
-import { Storage } from "../Storage";
+
+import { AbstractStorage } from "../AbstractStorage";
 import { OneDriveSetting } from "./OneDriveSetting";
 
-export class OneDrive implements Storage<OneDriveSetting> {
-	type = "onedrive"
-	label = "OneDrive"
-	constructor() {}
+export class OneDrive extends AbstractStorage<OneDriveSetting> {
+	type = "onedrive";
+	label = "OneDrive";
 }

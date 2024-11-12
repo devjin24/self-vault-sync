@@ -18,7 +18,7 @@ export default class SelfVaultSync extends Plugin {
 			this.saveData.bind(this)
 		);
 		const pluginContext = new PluginContext(this.settingRepo)
-		pluginContext.onload()
+		await pluginContext.onload()
 
 		console.info(`loading plugin ${this.manifest.id}`);
 		// This adds a settings tab so the user can configure various aspects of the plugin
@@ -26,7 +26,7 @@ export default class SelfVaultSync extends Plugin {
 			new SelfVaultSyncSettingTab(
 				this.app,
 				this,
-				new StorageOptionHandler(pluginContext.storageOptions())
+				pluginContext.storageOptions()
 			)
 		);
 

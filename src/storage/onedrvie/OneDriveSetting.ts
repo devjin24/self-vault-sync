@@ -1,6 +1,8 @@
+import { StorageSetting } from "../StorageSetting"
 
-export class OneDriveSetting implements StorageSetting{
-	static readonly type: string = "onedrive"
-	static readonly label: string = "OneDrive"
-
+export class OneDriveSetting implements StorageSetting {
+	clientId: string;
+	constructor(settings?: Partial<OneDriveSetting>) {
+		Object.assign(this, settings);
+	}
 }
