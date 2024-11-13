@@ -1,12 +1,11 @@
-import { OneDriveSetting } from "src/storage/onedrvie/OneDriveSetting";
+import OneDriveSetting, { DEFALUT_ONEDRIVE_SETTING } from "src/storage/onedrvie/OneDriveSetting"
 
-export class SelfVaultSyncDataJson {
-	type: string;
-	onedrive: OneDriveSetting;
-
-	constructor(type: string, onedrive: OneDriveSetting) {
-		this.type = type;
-		this.onedrive = onedrive;
-	}
+export interface SelfVaultSyncDataJson {
+	type: string
+	onedrive: OneDriveSetting
 }
 
+export const DEFAULT_DATA: Partial<SelfVaultSyncDataJson> = {
+	type: "onedrive",
+	onedrive: DEFALUT_ONEDRIVE_SETTING
+}

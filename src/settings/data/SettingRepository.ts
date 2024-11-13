@@ -1,43 +1,47 @@
-
-import { OneDriveSetting } from "src/storage/onedrvie/OneDriveSetting";
-import { SelfVaultSyncDataJson } from "./SelfValutSyncDataJson";
+import SelfVaultSync from "src/main";
+import { DEFAULT_DATA, SelfVaultSyncDataJson } from "./SelfValutSyncDataJson";
 
 export interface SettingRepository {
-	loadSettings():Promise<SelfValutSyncSettings>
+	loadSettings(): Promise<SelfVaultSyncDataJson>;
 }
+
 export class SettingRepositoryImpl implements SettingRepository {
-	private dataJson: SelfVaultSyncDataJson
-	private loadData: () => Promise<any>;
-	private saveData: (data:any) => Promise<any>;
+	private dataJson: SelfVaultSyncDataJson;
+	private plugin: SelfVaultSync;
 
-	constructor(loadData: () => Promise<any>, saveData: (data:any) => Promise<any>) {
-		this.loadData = loadData
-		this.saveData = saveData
+	constructor(plugin: SelfVaultSync) {
+		this.plugin = plugin;
 	}
 
-	async loadSettings():Promise<SelfValutSyncSettings> {
-		this.dataJson = Object.assign(
-			{},
-			structuredClone(
-				new SelfVaultSyncDataJson(OneDriveSetting.type, new OneDriveSetting())
-			),
-			await this.loadData()
-		);
-		if (this.dataJson.type === OneDriveSetting.type) {
-			return new SelfValutSyncSettings(this.dataJson.onedrive);
-		} else {
-			throw new Error("Unsupported type");
-		}
+	async loadSettings(): Promise<SelfVaultSyncDataJson> {
+		// this.dataJson = Object.assign<SelfVaultSyncDataJson, Partial<SelfVaultSyncDataJson>>(
+		// 	{} as SelfVaultSyncDataJson,
+		// 	// structuredClone(
+		// 	// 	new SelfVaultSyncDataJson(new OneDriveSetting())
+		// 	// ),
+		// 	DEFAULT_DATA,
+		// 	await this.plugin.loadData()
+		// );
+		// if (this.dataJson.type === OneDriveSetting.type) {
+		// 	return new SelfValutSyncSettings(this.dataJson.onedrive);
+		// } else {
+		// 	throw new Error("Unsupported type");
+		// }
+		this.dataJson = {
+			...DEFAULT_DATA,
+			...(await this.plugin.loadData()),
+		} as SelfVaultSyncDataJson;
+		return this.dataJson;
 	}
 
-	async saveSettings(settings:SelfValutSyncSettings) {
-		console.log(settings.storage.constructor.name)
-		if (settings.storage instanceof OneDriveSetting) {
-			this.dataJson.type = OneDriveSetting.type
-			this.dataJson.onedrive = settings.storage as OneDriveSetting;
-		} else {
-			throw new Error("Unsupported type")
-		}			
-		await this.saveData(this.dataJson);
-	}
+	// async saveSettings(settings:SelfValutSyncSettings) {
+	// 	console.log(settings.storage.constructor.name)
+	// 	if (settings.storage instanceof OneDriveSetting) {
+	// 		this.dataJson.type = OneDriveSetting.type
+	// 		this.dataJson.onedrive = settings.storage as OneDriveSetting;
+	// 	} else {
+	// 		throw new Error("Unsupported type")
+	// 	}
+	// 	await this.plugin.saveData(this.dataJson);
+	// }
 }

@@ -1,8 +1,12 @@
 import { StorageSetting } from "../StorageSetting"
 
-export class OneDriveSetting implements StorageSetting {
-	clientId: string;
-	constructor(settings?: Partial<OneDriveSetting>) {
-		Object.assign(this, settings);
-	}
+export default interface OneDriveSetting extends StorageSetting {
+	clientId: string
+	// constructor(settings?: Partial<OneDriveSetting>) {
+	// 	Object.assign(this, settings);
+	// }
+}
+
+export const DEFALUT_ONEDRIVE_SETTING: OneDriveSetting = {
+	clientId: ""
 }
