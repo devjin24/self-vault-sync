@@ -1,17 +1,20 @@
 import { App, PluginSettingTab, Setting } from "obsidian";
 import SelfVaultSync from "src/main";
-import { StorageOptionHandler } from "./StorageOptionHandler";
+import { PluginService } from "src/PluginService";
 
 export class SelfVaultSyncSettingTab extends PluginSettingTab {
-	private storageOptionHandler: StorageOptionHandler;
+	private options: Map<string, string>
+	private service: PluginService
 
 	constructor(
 		app: App,
 		plugin: SelfVaultSync,
-		storageOptionHandler: StorageOptionHandler
+		options: Map<string, string>,
+		pluginService: PluginService
 	) {
 		super(app, plugin);
-		this.storageOptionHandler = storageOptionHandler;
+		this.options = options
+		this.service = pluginService
 	}
 
 	display(): void {
@@ -27,14 +30,14 @@ export class SelfVaultSyncSettingTab extends PluginSettingTab {
 		new Setting(serviceChooserDiv)
 			.setName("Choose Storage Type")
 			.addDropdown(async (dropdown) => {
-				this.storageOptionHandler.options.forEach((label, value) =>
+				this.options.forEach((label, value) =>
 					dropdown.addOption(value, label)
 				);
 
 				dropdown
 					// .setValue(this.settings.getKind())
 					.onChange(async (val) => {
-						this.storageOptionHandler.onChange(val)
+						// this.storageOptionHandler.onChange(val)
 					});
 			});
 

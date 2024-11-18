@@ -7,4 +7,5 @@ export class PluginService {
 	constructor(storage: Storage<StorageSetting>) {
 		this.storage = storage
 	}
+
 }

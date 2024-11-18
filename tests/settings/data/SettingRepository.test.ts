@@ -1,5 +1,3 @@
-import { App, PluginManifest } from "obsidian";
-import SelfVaultSync from "src/main";
 import {
 	DEFAULT_SETTINGS,
 	SelfVaultSyncSettings,
@@ -9,37 +7,7 @@ import {
 	SettingRepositoryImpl,
 } from "src/settings/SettingRepository";
 import { DEFALUT_ONEDRIVE_SETTING } from "src/storage/onedrvie/OneDriveSetting";
-
-const mockApp = {
-	workspace: {},
-	vault: {},
-} as App;
-
-const mockManifest: PluginManifest = {
-	id: "test-plugin",
-	name: "Test Plugin",
-	version: "1.0.0",
-	minAppVersion: "0.15.0",
-	author: "test",
-	description: "test",
-};
-
-class MockSelfVaultSync extends SelfVaultSync {
-	settingRepo: SettingRepository;
-	private mockData: any = {};
-
-	constructor(app: App, manifest: PluginManifest) {
-		super(app, manifest);
-	}
-
-	async loadData(): Promise<any> {
-		return this.mockData;
-	}
-
-	async saveData(data: any): Promise<void> {
-		this.mockData = data;
-	}
-}
+import { mockApp, mockManifest, MockSelfVaultSync } from "tests/__mocks__/Obsidian";
 
 describe("SettingRepository", () => {
 	let settingRepository: SettingRepository;

@@ -1,4 +1,5 @@
 import { PluginService } from "./PluginService";
+import { SelfVaultSyncSettings } from "./settings/SelfValutSyncSettings";
 import { SettingRepository } from "./settings/SettingRepository";
 import { OneDrive } from "./storage/onedrvie/OneDrive";
 import { Storage } from "./storage/Storage";
@@ -12,7 +13,8 @@ export class PluginContext {
 	private storageMap = new Map<string, Storage<StorageSetting>>(
 		this.storages.map((storage) => [storage.type, storage])
 	);
-	private type:string
+	private settings: SelfVaultSyncSettings
+	
 	constructor(repo: SettingRepository) {
 		this.repo = repo;
 	}
@@ -24,9 +26,15 @@ export class PluginContext {
 	}
 
 	async onload() {
-		// const data = await this.repo.loadSettings();
-		const type = "onedrive"
-		const storage = this.storageMap.get(type) ?? new OneDrive()
+		this.settings = await this.repo.loadSettings();
+		const storage =
+			this.storageMap.get(this.settings.type) ??
+			(() => {
+				throw new Error(`Unknown storage type: ${this.settings.type}`);
+			})();
 		this.service = new PluginService(storage);
+	}
+	getService(): PluginService {
+		return this.service
 	}
 }

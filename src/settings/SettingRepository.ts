@@ -6,7 +6,7 @@ import {
 
 export interface SettingRepository {
 	loadSettings(): Promise<SelfVaultSyncSettings>;
-	saveSettings(settings: SelfVaultSyncSettings): void;
+	saveSettings(settings: SelfVaultSyncSettings): Promise<void>;
 }
 
 export class SettingRepositoryImpl implements SettingRepository {
@@ -31,11 +31,14 @@ export class SettingRepositoryImpl implements SettingRepository {
 		// } else {
 		// 	throw new Error("Unsupported type");
 		// }
-		this.settings = this.deepMerge(structuredClone(DEFAULT_SETTINGS), await this.plugin.loadData())
+		this.settings = this.deepMerge(
+			structuredClone(DEFAULT_SETTINGS),
+			await this.plugin.loadData()
+		);
 		return this.settings;
 	}
 
-	async saveSettings(settings: SelfVaultSyncSettings) {
+	async saveSettings(settings: SelfVaultSyncSettings): Promise<void> {
 		// console.log(settings.storage.constructor.name);
 		// if (settings.storage instanceof OneDriveSetting) {
 		// 	this.settings.type = OneDriveSetting.type;
@@ -43,7 +46,7 @@ export class SettingRepositoryImpl implements SettingRepository {
 		// } else {
 		// 	throw new Error("Unsupported type");
 		// }
-		await this.plugin.saveData(settings);
+		return await this.plugin.saveData(settings);
 	}
 	private isObject(item: any): boolean {
 		return item && typeof item === "object" && !Array.isArray(item);

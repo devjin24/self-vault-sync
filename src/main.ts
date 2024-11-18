@@ -1,6 +1,8 @@
-
 import { SelfVaultSyncSettingTab } from "./settings/SelfValutSyncSettingTab";
-import { SettingRepository, SettingRepositoryImpl } from "./settings/SettingRepository";
+import {
+	SettingRepository,
+	SettingRepositoryImpl,
+} from "./settings/SettingRepository";
 import { PluginContext } from "./PluginContext";
 import { App, Plugin, PluginManifest } from "obsidian";
 
@@ -8,26 +10,24 @@ export default class SelfVaultSync extends Plugin {
 	settingRepo: SettingRepository;
 
 	constructor(app: App, manifest: PluginManifest) {
-		super(app, manifest);		
+		super(app, manifest);
 	}
 
 	async onload() {
-		this.settingRepo = new SettingRepositoryImpl(
-			this
-		);
-		const pluginContext = new PluginContext(this.settingRepo)
-		await pluginContext.onload()
+		this.settingRepo = new SettingRepositoryImpl(this);
+		const pluginContext = new PluginContext(this.settingRepo);
+			await pluginContext.onload();
 
 		console.info(`loading plugin ${this.manifest.id}`);
 		// This adds a settings tab so the user can configure various aspects of the plugin
-		// this.addSettingTab(
-		// 	new SelfVaultSyncSettingTab(
-		// 		this.app,
-		// 		this,
-				
-		// 		pluginContext.storageOptions()
-		// 	)
-		// );
+		this.addSettingTab(
+			new SelfVaultSyncSettingTab(
+				this.app,
+				this,
+				pluginContext.storageOptions(),
+				pluginContext.getService()
+			)
+		);
 
 		// await this.init();
 
