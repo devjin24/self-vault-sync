@@ -1,5 +1,5 @@
 import { PluginService } from "./PluginService";
-import { SettingRepository } from "./settings/data/SettingRepository";
+import { SettingRepository } from "./settings/SettingRepository";
 import { OneDrive } from "./storage/onedrvie/OneDrive";
 import { Storage } from "./storage/Storage";
 import { StorageSetting } from "./storage/StorageSetting";

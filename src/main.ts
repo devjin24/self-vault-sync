@@ -1,8 +1,8 @@
-import { App, Plugin, PluginManifest } from "obsidian";
-import { SelfVaultSyncSettingTab } from "./settings/SelfValutSyncSettingTab";
 
-import { SettingRepository, SettingRepositoryImpl } from "./settings/data/SettingRepository";
+import { SelfVaultSyncSettingTab } from "./settings/SelfValutSyncSettingTab";
+import { SettingRepository, SettingRepositoryImpl } from "./settings/SettingRepository";
 import { PluginContext } from "./PluginContext";
+import { App, Plugin, PluginManifest } from "obsidian";
 
 export default class SelfVaultSync extends Plugin {
 	settingRepo: SettingRepository;
