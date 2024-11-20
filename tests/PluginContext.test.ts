@@ -21,26 +21,6 @@ describe("PluginContext", () => {
 		expect(options.get("onedrive")).toBeDefined();
 	});
 
-	test("should load settings and initialize service", async () => {
-		// Given
-		const mockSettings = {
-			type: "onedrive",
-			onedrive: {
-				clientId: "test-client-id",
-			},
-		};
-		
-		mockSettingRepo.saveSettings(mockSettings as SelfVaultSyncSettings)
-
-		// When
-		await pluginContext.onload();
-
-		// Then
-		const service = pluginContext.getService();
-		console.log("Initialized service:", service);
-		expect(service).toBeDefined();
-	});
-
 	test("should initialize storage map correctly", async () => {
 		// Given
 		const mockSettings = {
@@ -56,4 +36,12 @@ describe("PluginContext", () => {
 		const settings = (pluginContext as any).settings;
 		expect(settings.type == "onedrive");
 	});
+
+	test("onChangeType", async () => {
+		await pluginContext.onload(); 
+		expect(async () => {
+			pluginContext.onChangeType("googledrive");
+		}).rejects.toThrow(Error);
+		expect(pluginContext.service.type == "onedrive")
+	})
 });

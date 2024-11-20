@@ -24,8 +24,7 @@ export default class SelfVaultSync extends Plugin {
 			new SelfVaultSyncSettingTab(
 				this.app,
 				this,
-				pluginContext.storageOptions(),
-				pluginContext.getService()
+				pluginContext
 			)
 		);
 

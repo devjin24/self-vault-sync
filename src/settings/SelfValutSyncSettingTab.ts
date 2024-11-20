@@ -1,47 +1,59 @@
 import { App, PluginSettingTab, Setting } from "obsidian";
 import SelfVaultSync from "src/main";
-import { PluginService } from "src/PluginService";
+import { PluginContext } from "src/PluginContext";
 
 export class SelfVaultSyncSettingTab extends PluginSettingTab {
-	private options: Map<string, string>
-	private service: PluginService
+	private context: PluginContext;
 
-	constructor(
-		app: App,
-		plugin: SelfVaultSync,
-		options: Map<string, string>,
-		pluginService: PluginService
-	) {
+	constructor(app: App, plugin: SelfVaultSync, pluginContext: PluginContext) {
 		super(app, plugin);
-		this.options = options
-		this.service = pluginService
+		this.context = pluginContext;
 	}
 
 	display(): void {
 		const { containerEl } = this;
 		containerEl.empty();
 		containerEl.createEl("h1", { text: "Self Valut Sync" });
-
 		const serviceChooserDiv = containerEl.createDiv();
-		serviceChooserDiv.createEl("h2", {
-			text: "Choose Storage Type",
+		const storageSettingDiv = containerEl.createDiv();
+		containerEl.createEl("div", {
+			cls: "custom-divider",
+			attr: {
+				style: "border-bottom: 1px solid #ccc; margin-top: 0px; margin-bottom: 7px; height: 1px;",
+			},
 		});
+		const commonSettingDiv = containerEl.createDiv();
 
 		new Setting(serviceChooserDiv)
 			.setName("Choose Storage Type")
 			.addDropdown(async (dropdown) => {
-				this.options.forEach((label, value) =>
-					dropdown.addOption(value, label)
-				);
+				this.context
+					.storageOptions()
+					.forEach((label, value) =>
+						dropdown.addOption(value, label)
+					);
 
 				dropdown
-					// .setValue(this.settings.getKind())
+					.setValue(this.context.currentType())
 					.onChange(async (val) => {
-						// this.storageOptionHandler.onChange(val)
+						this.context.onChangeType(val);
+						this.renderStorageSetting(storageSettingDiv);
 					});
 			});
 
-		new Setting(containerEl)
+		this.renderStorageSetting(storageSettingDiv);
+		this.renderCommonSetting(commonSettingDiv);
+	}
+
+	renderStorageSetting(div: HTMLElement) {
+		while (div.firstChild) {
+			div.removeChild(div.firstChild);
+		}
+		this.context.storageSettingComponent().render(div);
+	}
+
+	renderCommonSetting(div: HTMLElement) {
+		new Setting(div)
 			.setName("Setting #1")
 			.setDesc("It's a secret")
 			.addText(
