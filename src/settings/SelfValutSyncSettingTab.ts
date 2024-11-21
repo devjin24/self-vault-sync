@@ -1,13 +1,13 @@
 import { App, PluginSettingTab, Setting } from "obsidian";
 import SelfVaultSync from "src/main";
-import { PluginContext } from "src/PluginContext";
+import { SettingTabServiceFacade } from "./SettingTabServiceFacade";
 
 export class SelfVaultSyncSettingTab extends PluginSettingTab {
-	private context: PluginContext;
+		private service: SettingTabServiceFacade;
 
-	constructor(app: App, plugin: SelfVaultSync, pluginContext: PluginContext) {
+	constructor(app: App, plugin: SelfVaultSync, service: SettingTabServiceFacade) {
 		super(app, plugin);
-		this.context = pluginContext;
+		this.service = service;
 	}
 
 	display(): void {
@@ -27,16 +27,14 @@ export class SelfVaultSyncSettingTab extends PluginSettingTab {
 		new Setting(serviceChooserDiv)
 			.setName("Choose Storage Type")
 			.addDropdown(async (dropdown) => {
-				this.context
-					.storageOptions()
-					.forEach((label, value) =>
-						dropdown.addOption(value, label)
-					);
+				this.service.storageOptions.forEach((label, value) =>
+					dropdown.addOption(value, label)
+				);
 
 				dropdown
-					.setValue(this.context.currentType())
+					.setValue(this.service.currentType())
 					.onChange(async (val) => {
-						this.context.onChangeType(val);
+						await this.service.updateSettings("type", val);
 						this.renderStorageSetting(storageSettingDiv);
 					});
 			});
@@ -49,20 +47,13 @@ export class SelfVaultSyncSettingTab extends PluginSettingTab {
 		while (div.firstChild) {
 			div.removeChild(div.firstChild);
 		}
-		this.context.storageSettingComponent().render(div);
+		this.service.storageSettingRender(div);
 	}
 
 	renderCommonSetting(div: HTMLElement) {
 		new Setting(div)
 			.setName("Setting #1")
 			.setDesc("It's a secret")
-			.addText(
-				(text) => text.setPlaceholder("Enter your secret")
-				// .setValue(this.plugin.settings.mySetting)
-				// .onChange(async (value) => {
-				// this.plugin.settings.mySetting = value;
-				// await this.plugin.saveSettings();
-				// })
-			);
+			.addText((text) => text.setPlaceholder("Enter your secret"));
 	}
 }

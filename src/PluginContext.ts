@@ -1,7 +1,10 @@
-import { PluginService } from "./PluginService";
+import SelfVaultSync from "./main";
 import { SelfVaultSyncSettings } from "./settings/SelfValutSyncSettings";
-import { SettingComponent } from "./settings/SettingComponent";
-import { SettingRepository } from "./settings/SettingRepository";
+import {
+	SettingRepository,
+	SettingRepositoryImpl,
+} from "./settings/SettingRepository";
+import { SettingTabServiceFacade } from "./settings/SettingTabServiceFacade";
 import { GoogleDrive } from "./storage/googledrive/GoogleDrive";
 import { OneDrive } from "./storage/onedrvie/OneDrive";
 import { Storage } from "./storage/Storage";
@@ -9,7 +12,6 @@ import { StorageSetting } from "./storage/StorageSetting";
 import { TypeScriptExt } from "./TypeScriptExt";
 
 export class PluginContext {
-	private repo: SettingRepository;
 	private storages: Storage<StorageSetting>[] = [
 		new OneDrive(),
 		new GoogleDrive(),
@@ -17,43 +19,58 @@ export class PluginContext {
 	private storageMap = new Map<string, Storage<StorageSetting>>(
 		this.storages.map((storage) => [storage.type, storage])
 	);
+
+	settingTabService: SettingTabServiceFacade;
 	private settings: SelfVaultSyncSettings;
-	service: PluginService;
+	private storage: Storage<StorageSetting>;
+	private repo: SettingRepository;
 
-	constructor(repo: SettingRepository) {
-		this.repo = repo;
+	constructor(plugin: SelfVaultSync) {
+		this.repo = new SettingRepositoryImpl(plugin);
 	}
 
-	storageOptions(): Map<string, string> {
-		return TypeScriptExt.mapValues(this.storageMap, (value) => {
-			return value.label;
-		});
-	}
-
-	async onload() {
+	async init() {
 		this.settings = await this.repo.loadSettings();
-		this.changeStorage(this.settings.type);
+		this.storage = this.getStorage();
+		this.settingTabService = new SettingTabServiceFacade(
+			TypeScriptExt.mapValues(this.storageMap, (value) => {
+				return value.label;
+			}),
+			{
+				settings: () => this.settings,
+				updateCommonSettings: this.updateCommonSettings,
+				storage: this.getStorage,
+				onChangeStorageSetting: this.onChangeStorageSetting
+			}
+		);
 	}
 
-	onChangeType(type: string) {
-		this.settings.type = type;
-		this.changeStorage(this.settings.type);
-	}
+	//setting 관리
+	private updateCommonSettings = async  (key: keyof SelfVaultSyncSettings, value: any) => {
+		this.settings = ({
+			...this.settings,
+			[key]: value,
+		});
+		await this.repo.saveSettings(this.settings);
+	};
 
-	currentType() {
-		return this.settings.type;
-	}
+	private onChangeStorageSetting = async () => {
+		this.settings[this.settings.type as keyof SelfVaultSyncSettings] =
+			this.storage.getSetting();
+		await this.repo.saveSettings(this.settings);
+	};
 
-	storageSettingComponent():SettingComponent {
-		return this.service.settingComponent()
-	}
-
-	private changeStorage(type: string) {
+	//rpeo
+	private getStorage = () => {
 		const storage =
 			this.storageMap.get(this.settings.type) ??
 			(() => {
 				throw new Error(`Unknown storage type: ${this.settings.type}`);
 			})();
-		this.service = new PluginService(storage);
-	}
+		storage.setSetting(
+			this.settings[this.settings.type as keyof SelfVaultSyncSettings]
+		);
+		return storage;
+	};
 }
+	

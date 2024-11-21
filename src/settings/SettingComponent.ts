@@ -1,4 +1,7 @@
-
 export interface SettingComponent {
-	render(containerEl: HTMLElement): void
+	render(
+		containerEl: HTMLElement,
+		onChange: () => Promise<void>
+	): void;
+
 }

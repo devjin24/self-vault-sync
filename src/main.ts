@@ -1,10 +1,9 @@
+import { App, Plugin, PluginManifest } from "obsidian";
+import { PluginContext } from "./PluginContext";
 import { SelfVaultSyncSettingTab } from "./settings/SelfValutSyncSettingTab";
 import {
-	SettingRepository,
-	SettingRepositoryImpl,
+	SettingRepository
 } from "./settings/SettingRepository";
-import { PluginContext } from "./PluginContext";
-import { App, Plugin, PluginManifest } from "obsidian";
 
 export default class SelfVaultSync extends Plugin {
 	settingRepo: SettingRepository;
@@ -14,9 +13,8 @@ export default class SelfVaultSync extends Plugin {
 	}
 
 	async onload() {
-		this.settingRepo = new SettingRepositoryImpl(this);
-		const pluginContext = new PluginContext(this.settingRepo);
-			await pluginContext.onload();
+		const pluginContext = new PluginContext(this);
+		await pluginContext.init();
 
 		console.info(`loading plugin ${this.manifest.id}`);
 		// This adds a settings tab so the user can configure various aspects of the plugin
@@ -24,16 +22,14 @@ export default class SelfVaultSync extends Plugin {
 			new SelfVaultSyncSettingTab(
 				this.app,
 				this,
-				pluginContext
+				pluginContext.settingTabService
 			)
 		);
-
-		// await this.init();
 
 		// // This creates an icon in the left ribbon.
 		// const ribbonIconEl = this.addRibbonIcon('dice', 'Sample Plugin', (evt: MouseEvent) => {
 		// 	// Called when the user clicks the icon.
-		// 	new Notice('This is a notice!');
+				// 	new Notice('This is a notice!');
 		// });
 		// // Perform additional things with the ribbon
 		// ribbonIconEl.addClass('my-plugin-ribbon-class');

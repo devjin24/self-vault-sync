@@ -14,7 +14,7 @@ export interface OneDriveSetting extends StorageSetting {
 }
 
 export const DEFALUT_ONEDRIVE_SETTING: OneDriveSetting = {
-	clientId: "",
+	clientId: "clientId",
 	accessToken: "",
     authority: "",
     refreshToken: "",
